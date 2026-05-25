@@ -1,9 +1,13 @@
+import { config } from 'dotenv'
+import path from 'path'
 import { v2 as cloudinary } from 'cloudinary'
 
+config({ path: path.resolve('./config/.env') })
+
 cloudinary.config({
-    cloud_name: 'duhum1zna',
-    api_key: '238483654863626',
-    api_secret: 'w-xLJHF0Rg-VbtXXJ488ALDFWRE'
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 export const uploadFileCloudinary = async (file: Express.Multer.File, pathName: string): Promise<{ url: string, Key: string }> => {
