@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 interface EmailOptions {
     to: string;
@@ -12,25 +12,26 @@ interface EmailOptions {
 }
 
 export const sendEmail = async ({ to, subject, html, attachments }: EmailOptions) => {
-    // 1. Create a transporter
-    const transporter = nodemailer.createTransport({
-        service: "gmail", // You can use other services here
-        auth: {
-            user: process.env.EMAIL_SERVICE_USER,
-            pass: process.env.EMAIL_SERVICE_PASS,
-        },
-    });
+    // Lazy initialization ensures dotenv has loaded the env variables
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    // 2. Define email options
-    const mailOptions = {
-        from: `"EcommercePro Team" <${process.env.EMAIL_SERVICE_USER}>`,
-        to,
+    // 1. Send email using Resend
+    const data = await resend.emails.send({
+        from: "Acme <onboarding@resend.dev>", // Replace with your verified domain in production e.g. "EcommercePro <orders@yourdomain.com>"
+        to: [to],
         subject,
         html,
-        attachments,
-    };
+        attachments: attachments?.map(att => ({
+            filename: att.filename,
+            content: Buffer.isBuffer(att.content) ? att.content : Buffer.from(att.content),
+            contentType: att.contentType
+        }))
+    });
 
-    // 3. Send email
-    const info = await transporter.sendMail(mailOptions);
-    return info;
+    if (data.error) {
+        console.error("Resend error:", data.error);
+        throw new Error(data.error.message);
+    }
+
+    return data;
 };

@@ -1,5 +1,5 @@
-import { z } from "zod"
-import { Gendertype } from "../../model/user.model.js";
+import { z } from "zod";
+import { Gendertype, Roletype } from "../../model/user.model.js";
 
 
 export const signupSchema = {
@@ -14,6 +14,7 @@ export const signupSchema = {
         age: z.number().min(10).max(100).optional(),
         DOB: z.string().datetime().optional(),
         gender: z.nativeEnum(Gendertype),
+        role: z.nativeEnum(Roletype).optional(),
     }).refine((data) => data.password === data.cpassword, {
         message: "Passwords don't match",
         path: ["cpassword"],

@@ -4,17 +4,37 @@ import { hashPassword, comparePassword } from "../../utils/hash.js";
 import { generateToken, verifyToken, Tokentype } from "../../utils/token.js";
 import AppError from "../../utils/AppError.js";
 import { sendEmail } from "../../utils/sendEmail.js";
+import { auth } from "../../middleware/auth.js";
 
 class UserService {
 
     async signup(req: Request, res: Response, next: NextFunction) {
         try {
-            const { username, email, password, phone, age, DOB, gender } = req.body;
+            const { username, email, password, phone, age, DOB, gender, role } = req.body;
 
             // 1. Check if user already exists
             const existingUser = await userModel.findOne({ email });
             if (existingUser) {
                 throw new AppError("Email already registered", 409);
+            }
+
+            // Verify role if it's admin
+            let finalRole = Roletype.user;
+            if (role === Roletype.admin) {
+                let authError: any = null;
+                await auth(req as any, res, (err) => {
+                    if (err) authError = err;
+                });
+
+                if (authError) {
+                    throw authError;
+                }
+
+                const currentUser = (req as any).user;
+                if (!currentUser || currentUser.role !== Roletype.admin) {
+                    throw new AppError("Only admins can assign the admin role", 403);
+                }
+                finalRole = Roletype.admin;
             }
 
             // 2. Hash password
@@ -37,6 +57,7 @@ class UserService {
                 age,
                 DOB,
                 gender,
+                role: finalRole,
                 otp: otpCode,
                 otpExpiry: otpExpiresAt,
             });

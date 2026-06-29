@@ -33,6 +33,15 @@ export const createProductSchema = {
             },
             z.record(z.string(), z.array(z.number())).optional()
         ),
+        attributes: z.preprocess(
+            (val) => {
+                if (typeof val === 'string') {
+                    try { return JSON.parse(val); } catch (e) { return val; }
+                }
+                return val;
+            },
+            z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional()
+        ),
     }),
 };
 
@@ -68,6 +77,15 @@ export const updateProductSchema = {
                 return val;
             },
             z.record(z.string(), z.array(z.number())).optional()
+        ),
+        attributes: z.preprocess(
+            (val) => {
+                if (typeof val === 'string') {
+                    try { return JSON.parse(val); } catch (e) { return val; }
+                }
+                return val;
+            },
+            z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional()
         ),
     }),
     params: z.object({

@@ -29,6 +29,7 @@ export interface IProduct extends Document {
   createdBy: Types.ObjectId;
   rateAvg: number;
   rateCount: number;
+  attributes: Map<string, any>;
 }
 
 const productSchema = new Schema<IProduct>(
@@ -108,6 +109,11 @@ const productSchema = new Schema<IProduct>(
     rateCount: {
       type: Number,
       default: 0,
+    },
+    attributes: {
+      type: Map,
+      of: Schema.Types.Mixed,
+      default: new Map(),
     },
   },
   {

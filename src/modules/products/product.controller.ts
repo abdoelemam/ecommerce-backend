@@ -9,6 +9,7 @@ import { MulterHost, filevalidation } from "../../middleware/multer.js";
 const productRouter = Router();
 
 productRouter.get("/", productService.getProducts);
+productRouter.get("/faceted", productService.getProductsWithFilters);
 productRouter.get("/:id", productService.getProductById);
 
 const uploadImages = MulterHost({ filetypes: filevalidation.image }).array("images", 5);
