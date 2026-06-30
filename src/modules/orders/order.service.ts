@@ -6,7 +6,7 @@ import couponModel from "../../model/coupon.model.js";
 import AppError from "../../utils/AppError.js";
 import { AuthRequest } from "../../middleware/auth.js";
 import crypto from "crypto";
-import userModel from "../../model/user.model.js";
+import userModel, { Roletype } from "../../model/user.model.js";
 import { sendEmail } from "../../utils/sendEmail.js";
 import { createInvoiceBuffer } from "../../utils/invoicePDF.js";
 
@@ -112,7 +112,7 @@ class OrderService {
             const userId = req.user?._id;
 
             const query: any = { _id: id };
-            if (req.user?.role !== "admin" && req.user?.role !== "Admin") {
+            if (req.user?.role !== Roletype.admin) {
                 query.userId = userId;
             }
 

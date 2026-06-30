@@ -8,7 +8,7 @@ export const createCouponSchema = {
         discountType: z.nativeEnum(DiscountType).optional(),
         minOrderAmount: z.number().min(0).optional(),
         maxDiscount: z.number().min(1).optional(),
-        expiresAt: z.coerce.date({ invalid_type_error: "Invalid date format" }),
+        expiresAt: z.coerce.date({ message: "Invalid date format" }),
         usageLimit: z.number().min(1).optional(),
     }),
 };
@@ -19,7 +19,7 @@ export const updateCouponSchema = {
         discountType: z.nativeEnum(DiscountType).optional(),
         minOrderAmount: z.number().min(0).optional(),
         maxDiscount: z.number().min(1).optional(),
-        expiresAt: z.coerce.date({ invalid_type_error: "Invalid date format" }).optional(),
+        expiresAt: z.coerce.date({ message: "Invalid date format" }).optional(),
         usageLimit: z.number().min(1).optional(),
     }),
     params: z.object({

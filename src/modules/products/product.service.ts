@@ -57,7 +57,7 @@ class ProductService {
             const slug = generateSlug(name);
 
             // Upload all images to Cloudinary
-            const uploadedImages = [];
+            const uploadedImages: { secure_url: string; key: string }[] = [];
             for (const file of files) {
                 const s3Result = await uploadFileCloudinary(file, `products/${slug}`);
                 uploadedImages.push({
@@ -93,7 +93,7 @@ class ProductService {
                     if (colorKey && mapping[colorKey]) {
                         variant.images = mapping[colorKey]
                             .filter((idx: number) => idx < uploadedImages.length)
-                            .map((idx: number) => uploadedImages[idx]);
+                            .map((idx: number) => uploadedImages[idx]!);
                     }
                 }
             }
@@ -295,7 +295,7 @@ class ProductService {
                     }
                 }
 
-                const uploadedImages = [];
+                const uploadedImages: { secure_url: string; key: string }[] = [];
                 for (const file of files) {
                     const s3Result = await uploadFileCloudinary(file, `products/${product.slug}`);
                     uploadedImages.push({
@@ -321,7 +321,7 @@ class ProductService {
                         if (colorKey && mapping[colorKey]) {
                             variant.images = mapping[colorKey]
                                 .filter((idx: number) => idx < uploadedImages.length)
-                                .map((idx: number) => uploadedImages[idx]);
+                                .map((idx: number) => uploadedImages[idx]!);
                         } else {
                             variant.images = [];
                         }
@@ -539,7 +539,7 @@ class ProductService {
                     { $match: attrBaseFilter },
                     { $project: { attrs: { $objectToArray: "$attributes" } } },
                     { $unwind: { path: "$attrs", preserveNullAndEmptyArrays: false } },
-                    { $match: { "attrs.v": { $ne: null, $ne: "" } } },
+                    { $match: { "attrs.v": { $nin: [null, ""] } } },
                     { $group: { _id: "$attrs.k", values: { $addToSet: "$attrs.v" } } },
                     { $sort: { _id: 1 } },
                 ]),
