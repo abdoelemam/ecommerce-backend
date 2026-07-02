@@ -479,22 +479,6 @@ class OrderService {
            return res.status(200).json({ message: "Error" });
         }
     }
-
-    // [9] Paymob Redirect (GET request from Paymob after payment)
-    async paymobRedirect(req: Request, res: Response, next: NextFunction) {
-        try {
-            const frontendUrl = process.env.FRONTEND_URL || "https://frontecommerce-3uxmg7dyo-abdelrahamns-projects-0616de63.vercel.app";
-            const success = req.query.success === "true";
-            
-            if (success) {
-                return res.redirect(`${frontendUrl}/collections?payment=success`);
-            } else {
-                return res.redirect(`${frontendUrl}/checkout?payment=failed`);
-            }
-        } catch (error) {
-            next(error);
-        }
-    }
 }
 
 export default new OrderService();

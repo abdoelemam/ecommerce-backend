@@ -9,7 +9,6 @@ const orderRouter = Router();
 
 // Webhook must be outside of `auth` protection, because it's called by Paymob Servers directly
 orderRouter.post("/webhook/paymob", orderService.paymobWebhook);
-orderRouter.get("/webhook/paymob", orderService.paymobRedirect);
 
 // All order routes require authentication
 orderRouter.use(auth);
